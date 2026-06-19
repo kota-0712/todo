@@ -1,0 +1,32 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>タスク登録</title>
+</head>
+<body>
+    <h1>タスク登録</h1>
+    <form th:action="@{/tasks/new}" method="post">
+        <div>
+            <label>タイトル：<input type="text" name="title"></label>
+        </div>
+        <div>
+            <label>内容：<input type="text" name="content"></label>
+        </div>
+        <div>
+            <label>名前：<input type="text" name="name"></label>
+        </div>
+        <div>
+            <label>開始日：<input type="date" name="startDate"></label>
+        </div>
+        <div>
+            <label>終了日：<input type="date" name="endDate"></label>
+        </div>
+        <div>
+            <button type="submit">完了</button>
+        </div>
+    </form>
+    <a href="/tasks">一覧に戻る</a>
+</body>
+</html>

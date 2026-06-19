@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>タスク一覧</title>
+</head>
+<body>
+    <h1>ToDoリスト</h1>
+
+	<a href="/logout">ログアウト</a>
+   
+
+    <p th:if="${#lists.isEmpty(tasks)}">タスクが登録されていません。</p>
+
+    <table border="1" th:if="${!#lists.isEmpty(tasks)}">
+        <tr>
+            <th>ID</th>
+            <th>タイトル</th>
+            <th>内容</th>
+            <th>名前</th>
+            <th>開始日</th>
+            <th>終了日</th>
+            <th>作成日時</th>
+            <th>更新日時</th>
+            <th>操作</th>
+        </tr>
+        <tr th:each="task : ${tasks}">
+            <td th:text="${task.id}"></td>
+            <td th:text="${task.title}"></td>
+            <td th:text="${task.content}"></td>
+            <td th:text="${task.name}"></td>
+            <td th:text="${task.startDate}"></td>
+            <td th:text="${task.endDate}"></td>
+            <td th:text="${#temporals.format(task.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
+            <td th:text="${#temporals.format(task.updatedAt, 'yyyy-MM-dd HH:mm')}"></td>
+            <td>
+                <a th:href="@{/tasks/edit/{id}(id=${task.id})}">編集</a>
+                <form th:action="@{/tasks/delete/{id}(id=${task.id})}" method="post" style="display:inline">
+                    <button type="submit">削除</button>
+                </form>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
