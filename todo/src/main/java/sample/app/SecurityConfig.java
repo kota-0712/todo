@@ -13,21 +13,21 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/login", "/register", "/h2-console/**").permitAll()
-                .anyRequest().authenticated()
-            )
+        .authorizeHttpRequests(auth -> auth
+        	    .requestMatchers("/", "/login", "/register", "/h2-console/**").permitAll()
+        	    .anyRequest().authenticated()
+        	)
+           
             .formLogin(form -> form
                 .loginPage("/login")
                 .defaultSuccessUrl("/tasks", true)
                 .permitAll()
             )
             .logout(logout -> logout
-            	    .logoutRequestMatcher(new org.springframework.security.web.util.matcher.AntPathRequestMatcher("/logout", "GET"))
             	    .logoutSuccessUrl("/")
             	    .permitAll()
-            	
-            )
+            	)
+            
             .csrf(csrf -> csrf
                 .ignoringRequestMatchers("/h2-console/**")
             )

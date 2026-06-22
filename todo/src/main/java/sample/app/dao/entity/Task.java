@@ -3,14 +3,27 @@ package sample.app.dao.entity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 public class Task {
     private Integer id;
     private Integer userId;
+
+    @NotBlank(message = "タイトルは必須です")
     private String title;
+
     private String content;
+
+    @NotBlank(message = "名前は必須です")
     private String name;
+
+    @NotNull(message = "開始日は必須です")
     private LocalDate startDate;
+
+    @NotNull(message = "終了日は必須です")
     private LocalDate endDate;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 

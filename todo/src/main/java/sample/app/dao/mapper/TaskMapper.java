@@ -29,4 +29,6 @@ public interface TaskMapper {
 
     @Delete("DELETE FROM tasks WHERE id=#{id}")
     void delete(Integer id);
+    @Select("SELECT id, user_id AS userId, title, content, name, start_date AS startDate, end_date AS endDate, created_at AS createdAt, updated_at AS updatedAt FROM tasks WHERE user_id = #{userId} ORDER BY id DESC")
+    List<Task> findByUserId(Integer userId);
 }

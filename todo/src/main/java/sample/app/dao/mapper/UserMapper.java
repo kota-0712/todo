@@ -16,4 +16,6 @@ public interface UserMapper {
     @Insert("INSERT INTO users (username, password, created_at) VALUES (#{username}, #{password}, CURRENT_TIMESTAMP)")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     void insert(User user);
+    @Select("SELECT id, username, password, created_at AS createdAt FROM users WHERE id = #{id}")
+    User findById(Integer id);
 }

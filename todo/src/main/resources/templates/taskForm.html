@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -7,21 +6,25 @@
 </head>
 <body>
     <h1>タスク登録</h1>
-    <form th:action="@{/tasks/new}" method="post">
+    <form th:action="@{/tasks/new}" th:object="${task}" method="post">
         <div>
-            <label>タイトル：<input type="text" name="title"></label>
+            <label>タイトル：<input type="text" th:field="*{title}"></label>
+            <span th:if="${#fields.hasErrors('title')}" th:errors="*{title}" style="color:red"></span>
         </div>
         <div>
-            <label>内容：<input type="text" name="content"></label>
+            <label>内容：<input type="text" th:field="*{content}"></label>
         </div>
         <div>
-            <label>名前：<input type="text" name="name"></label>
+            <label>名前：<input type="text" th:field="*{name}"></label>
+            <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" style="color:red"></span>
         </div>
         <div>
-            <label>開始日：<input type="date" name="startDate"></label>
+            <label>開始日：<input type="date" th:field="*{startDate}"></label>
+            <span th:if="${#fields.hasErrors('startDate')}" th:errors="*{startDate}" style="color:red"></span>
         </div>
         <div>
-            <label>終了日：<input type="date" name="endDate"></label>
+            <label>終了日：<input type="date" th:field="*{endDate}"></label>
+            <span th:if="${#fields.hasErrors('endDate')}" th:errors="*{endDate}" style="color:red"></span>
         </div>
         <div>
             <button type="submit">完了</button>
