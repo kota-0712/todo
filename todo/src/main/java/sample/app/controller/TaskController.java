@@ -2,7 +2,7 @@ package sample.app.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -15,46 +15,55 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.server.ResponseStatusException;
 
 import sample.app.TaskService;
 import sample.app.dao.entity.Task;
 import sample.app.dao.mapper.UserMapper;
 
+/**
+ * タスク管理コントローラー
+ * タスクの一覧・登録・編集・削除・API機能を提供する
+ */
 @Controller
 @RequestMapping("/tasks")
 public class TaskController {
 
-    @Autowired
-    private TaskService taskService;
+	private final TaskService taskService;
+	private final UserMapper userMapper;
 
-    @Autowired
-    private UserMapper userMapper;
-
+	// コンストラクタ注入
+	public TaskController(TaskService taskService, UserMapper userMapper) {
+	    this.taskService = taskService;
+	    this.userMapper = userMapper;
+	}
+    /** ログイン中のユーザーIDを取得する */
     private Integer getLoginUserId(UserDetails userDetails) {
         return userMapper.findByUsername(userDetails.getUsername()).getId();
     }
 
+    /** タスク一覧画面 */
     @GetMapping
     public String list(Model model, @AuthenticationPrincipal UserDetails userDetails) {
-        Integer userId = getLoginUserId(userDetails);
-        List<Task> tasks = taskService.getTasksByUserId(userId);
+        List<Task> tasks = taskService.getTasksByUserId(getLoginUserId(userDetails));
         model.addAttribute("tasks", tasks);
         return "taskList";
     }
 
+    /** タスク登録フォーム表示 */
     @GetMapping("/new")
     public String newForm(Model model) {
         model.addAttribute("task", new Task());
         return "taskForm";
     }
 
+    /** タスク登録処理 */
     @PostMapping("/new")
     public String create(@Validated @ModelAttribute Task task,
                          BindingResult result,
                          @AuthenticationPrincipal UserDetails userDetails,
                          Model model) {
         if (result.hasErrors()) {
-            model.addAttribute("task", task);
             return "taskForm";
         }
         task.setUserId(getLoginUserId(userDetails));
@@ -62,17 +71,19 @@ public class TaskController {
         return "redirect:/tasks";
     }
 
+    /** タスク編集フォーム表示 */
     @GetMapping("/edit/{id}")
     public String editForm(@PathVariable Integer id, Model model,
                            @AuthenticationPrincipal UserDetails userDetails) {
         Task task = taskService.getTaskById(id);
         if (task == null || !task.getUserId().equals(getLoginUserId(userDetails))) {
-            return "redirect:/tasks";
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "タスクが見つかりません");
         }
         model.addAttribute("task", task);
         return "taskEdit";
     }
 
+    /** タスク更新処理 */
     @PostMapping("/update/{id}")
     public String update(@PathVariable Integer id,
                          @Validated @ModelAttribute Task task,
@@ -80,21 +91,28 @@ public class TaskController {
                          @AuthenticationPrincipal UserDetails userDetails,
                          Model model) {
         if (result.hasErrors()) {
-            model.addAttribute("task", task);
             return "taskEdit";
         }
         task.setId(id);
-        taskService.updateTask(task, getLoginUserId(userDetails));
+        boolean success = taskService.updateTask(task, getLoginUserId(userDetails));
+        if (!success) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "タスクが見つかりません");
+        }
         return "redirect:/tasks";
     }
 
+    /** タスク削除処理 */
     @PostMapping("/delete/{id}")
     public String delete(@PathVariable Integer id,
                          @AuthenticationPrincipal UserDetails userDetails) {
-        taskService.deleteTask(id, getLoginUserId(userDetails));
+        boolean success = taskService.deleteTask(id, getLoginUserId(userDetails));
+        if (!success) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "タスクが見つかりません");
+        }
         return "redirect:/tasks";
     }
 
+    /** タスク一覧をJSON形式で返すAPI */
     @GetMapping(value = "/api", produces = "application/json")
     @ResponseBody
     public List<Task> apiList(@AuthenticationPrincipal UserDetails userDetails) {

@@ -6,9 +6,8 @@ public class User {
     private Integer id;
     private String username;
     private String password;
-    private LocalDateTime createdAt; // ここの綴りが重要です
+    private LocalDateTime createdAt;
 
-    // ゲッターとセッター
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
     public String getUsername() { return username; }

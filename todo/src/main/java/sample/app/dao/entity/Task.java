@@ -3,6 +3,7 @@ package sample.app.dao.entity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -26,6 +27,13 @@ public class Task {
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    /** 終了日が開始日以降かチェック */
+    @AssertTrue(message = "終了日は開始日以降にしてください")
+    public boolean isEndDateValid() {
+        if (startDate == null || endDate == null) return true;
+        return !endDate.isBefore(startDate);
+    }
 
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }

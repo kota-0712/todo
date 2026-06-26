@@ -27,6 +27,9 @@
             <span th:if="${#fields.hasErrors('endDate')}" th:errors="*{endDate}" style="color:red"></span>
         </div>
         <div>
+            <span th:if="${#fields.hasErrors('endDateValid')}" th:errors="*{endDateValid}" style="color:red"></span>
+        </div>
+        <div>
             <button type="submit">完了</button>
         </div>
     </form>

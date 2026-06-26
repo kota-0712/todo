@@ -6,10 +6,11 @@
 </head>
 <body>
     <h1>ToDoリスト</h1>
-	<form th:action="@{/logout}" method="post" style="display:inline">
-	    <button type="submit">ログアウト</button>
-	</form>
-   
+
+    <a href="/tasks/new">登録</a>
+    <form th:action="@{/logout}" method="post" style="display:inline">
+        <button type="submit">ログアウト</button>
+    </form>
 
     <p th:if="${#lists.isEmpty(tasks)}">タスクが登録されていません。</p>
 
@@ -25,18 +26,18 @@
             <th>更新日時</th>
             <th>操作</th>
         </tr>
-        <tr th:each="task : ${tasks}">
-            <td th:text="${task.id}"></td>
-            <td th:text="${task.title}"></td>
-            <td th:text="${task.content}"></td>
-            <td th:text="${task.name}"></td>
-            <td th:text="${task.startDate}"></td>
-            <td th:text="${task.endDate}"></td>
+        <tr th:each="task : ${tasks}" th:object="${task}">
+            <td th:text="*{id}"></td>
+            <td th:text="*{title}"></td>
+            <td th:text="*{content}"></td>
+            <td th:text="*{name}"></td>
+            <td th:text="*{startDate}"></td>
+            <td th:text="*{endDate}"></td>
             <td th:text="${#temporals.format(task.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
             <td th:text="${#temporals.format(task.updatedAt, 'yyyy-MM-dd HH:mm')}"></td>
             <td>
-                <a th:href="@{/tasks/edit/{id}(id=${task.id})}">編集</a>
-                <form th:action="@{/tasks/delete/{id}(id=${task.id})}" method="post" style="display:inline">
+                <a th:href="@{/tasks/edit/{id}(id=*{id})}">編集</a>
+                <form th:action="@{/tasks/delete/{id}(id=*{id})}" method="post" style="display:inline">
                     <button type="submit">削除</button>
                 </form>
             </td>

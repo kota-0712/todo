@@ -1,24 +1,32 @@
 package sample.app;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import sample.app.dao.entity.User;
 import sample.app.dao.mapper.UserMapper;
 
+/**
+ * ユーザー管理サービス
+ * ユーザーの登録・認証を提供する
+ */
 @Service
 public class UserService implements UserDetailsService {
 
-    @Autowired
-    private UserMapper userMapper;
+    private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    // コンストラクタ注入
+    public UserService(UserMapper userMapper, PasswordEncoder passwordEncoder) {
+        this.userMapper = userMapper;
+        this.passwordEncoder = passwordEncoder;
+    }
 
+    /** Spring Securityの認証処理 */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userMapper.findByUsername(username);
@@ -32,7 +40,12 @@ public class UserService implements UserDetailsService {
             .build();
     }
 
+    /** ユーザー登録（重複チェックあり） */
+    @Transactional
     public void register(User user) {
+        if (userMapper.findByUsername(user.getUsername()) != null) {
+            throw new IllegalArgumentException("このユーザー名はすでに使われています");
+        }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userMapper.insert(user);
     }
