@@ -20,7 +20,6 @@ public class UserService implements UserDetailsService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
-    // コンストラクタ注入
     public UserService(UserMapper userMapper, PasswordEncoder passwordEncoder) {
         this.userMapper = userMapper;
         this.passwordEncoder = passwordEncoder;
@@ -40,6 +39,12 @@ public class UserService implements UserDetailsService {
             .build();
     }
 
+    /** ユーザー名でユーザーを取得 */
+    @Transactional(readOnly = true)
+    public User findByUsername(String username) {
+        return userMapper.findByUsername(username);
+    }
+
     /** ユーザー登録（重複チェックあり） */
     @Transactional
     public void register(User user) {
@@ -49,4 +54,16 @@ public class UserService implements UserDetailsService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userMapper.insert(user);
     }
+
+//UserService.java の中（クラスの閉じ括弧 `}` の前）にこれを追記
+/** コントローラーからの呼び出し用 */
+@Transactional
+public void registerUser(String username, String password) {
+    User user = new User();
+    user.setUsername(username);
+    user.setPassword(password);
+    
+    // 既存の登録ロジックを呼び出す
+    this.register(user);
+}
 }
