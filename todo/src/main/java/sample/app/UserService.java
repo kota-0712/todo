@@ -55,15 +55,17 @@ public class UserService implements UserDetailsService {
         userMapper.insert(user);
     }
 
+
 //UserService.java の中（クラスの閉じ括弧 `}` の前）にこれを追記
 /** コントローラーからの呼び出し用 */
 @Transactional
 public void registerUser(String username, String password) {
-    User user = new User();
-    user.setUsername(username);
-    user.setPassword(password);
-    
-    // 既存の登録ロジックを呼び出す
-    this.register(user);
+  User user = new User();
+  user.setUsername(username);
+  user.setPassword(password);
+ 
+  // 既存の登録ロジックを呼び出す
+  this.register(user);
 }
 }
+
